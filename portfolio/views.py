@@ -154,16 +154,16 @@ def investment_delete(request, pk):
    investments = Investment.objects.filter(acquired_date__lte=timezone.now())
    return render(request, 'portfolio/investment_list.html', {'investments': investments})
 
-@login_required
-def portfolio(request,pk):
-   customer = get_object_or_404(Customer, pk=pk)
-   customers = Customer.objects.filter(created_date__lte=timezone.now())
-   investments =Investment.objects.filter(customer=pk)
-   stocks = Stock.objects.filter(customer=pk)
-   sum_acquired_value = Investment.objects.filter(customer=pk).aggregate(Sum('acquired_value'))
-
-
-   return render(request, 'portfolio/portfolio.html',{'customers': customers, 'investments': investments, 'stocks': stocks, 'sum_acquired_value': sum_acquired_value,})
+# @login_required
+# def portfolio(request,pk):
+#    customer = get_object_or_404(Customer, pk=pk)
+#    customers = Customer.objects.filter(created_date__lte=timezone.now())
+#    investments =Investment.objects.filter(customer=pk)
+#    stocks = Stock.objects.filter(customer=pk)
+#    sum_acquired_value = Investment.objects.filter(customer=pk).aggregate(Sum('acquired_value'))
+#
+#
+#    return render(request, 'portfolio/portfolio.html',{'customers': customers, 'investments': investments, 'stocks': stocks, 'sum_acquired_value': sum_acquired_value,})
 
 
 @login_required
@@ -172,8 +172,11 @@ def portfolio(request, pk):
     customers = Customer.objects.filter(created_date__lte=timezone.now())
     investments = Investment.objects.filter(customer=pk)
     stocks = Stock.objects.filter(customer=pk)
+    mutualfunds = Mutualfund.objects.filter(customer=pk)
     sum_acquired_value = Investment.objects.filter(customer=pk).aggregate(Sum('acquired_value'))
     sum_recent_value = Investment.objects.filter(customer=pk).aggregate(Sum('recent_value'))
+    mf_sum_acquired_value = Mutualfund.objects.filter(customer=pk).aggregate(Sum('acquired_value'))
+    mf_sum_recent_value = Mutualfund.objects.filter(customer=pk).aggregate(Sum('recent_value'))
 
     # Initialize the value of the stocks
     sum_current_stocks_value = 0
@@ -186,10 +189,13 @@ def portfolio(request, pk):
 
     return render(request, 'portfolio/portfolio.html', {'customers': customers, 'investments': investments,
                                                         'stocks': stocks,
+                                                        'mutualfunds': mutualfunds,
                                                         'sum_acquired_value': sum_acquired_value,
                                                         'sum_recent_value': sum_recent_value,
                                                         'sum_current_stocks_value': sum_current_stocks_value,
-                                                        'sum_of_initial_stock_value': sum_of_initial_stock_value})
+                                                        'sum_of_initial_stock_value': sum_of_initial_stock_value,
+                                                        'mf_sum_acquired_value': mf_sum_acquired_value,
+                                                        'mf_sum_recent_value': mf_sum_recent_value})
 
 # Lists all customers
 class CustomerList(APIView):
